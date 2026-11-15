@@ -40,3 +40,4 @@ If the Chief Medical Officer (CMO) suffers acute incapacitation (e.g., loss of c
 1. The acting Commander or any certified crew member may trigger the `BREAK-GLASS` authorization code via the dashboard or voice interface.
 2. The system cryptographically logs the event with the authorizer's identifier, UTC timestamp, and clinical rationale into the SHA-256 audit ledger.
 3. CHIRON enters **Layman Buddy-Care Mode**, delivering step-by-step vocal instructions and visual checklists with simplified terminology to allow non-physicians to administer emergency care safely.
+

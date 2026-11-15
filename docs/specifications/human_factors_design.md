@@ -57,3 +57,4 @@ Every numerical telemetry indicator in the interface displays an explicit proven
 - `[SIM]`: Numerical output from the 7-axis physiological digital twin.
 - `[DER]`: Derived index computed via mathematical formulas (e.g., Composite ARI).
 - `[ABSTAIN]`: Measurement intentionally withheld due to sensor degradation or excessive noise.
+

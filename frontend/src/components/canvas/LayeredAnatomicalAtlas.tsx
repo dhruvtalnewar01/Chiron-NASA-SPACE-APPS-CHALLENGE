@@ -483,19 +483,22 @@ export function LayeredAnatomicalAtlas({
             /* 3D WebGL Multi-Layer Three.js Anatomical Model Viewport (Scaled to Fill Viewport Vertically) */
             <div className="w-full h-full relative">
               <Canvas
-                camera={{ position: [0, 0.1, 4.4], fov: 45 }}
+                camera={{ position: [0, 0.05, 5.6], fov: 42 }}
                 className="w-full h-full block rounded-xl"
               >
-                <ambientLight intensity={themeId === "orbital-daylight" ? 0.9 : 0.5} />
-                <directionalLight position={[5, 8, 5]} intensity={0.9} />
-                <directionalLight position={[-3, 4, -3]} intensity={0.4} />
+                <ambientLight intensity={themeId === "orbital-daylight" ? 1.0 : 0.65} />
+                <directionalLight position={[5, 8, 5]} intensity={1.2} />
+                <directionalLight position={[-4, 5, -3]} intensity={0.7} color="#38bdf8" />
+                <pointLight position={[0, 4, 3]} intensity={1.3} color="#0284c7" />
+                <pointLight position={[0, -2, -3]} intensity={0.8} color="#06b6d4" />
                 <OrbitControls
                   enableZoom={true}
                   enablePan={false}
-                  minDistance={3.0}
-                  maxDistance={8}
+                  minDistance={3.2}
+                  maxDistance={8.5}
+                  target={[0, 0.05, 0]}
                   autoRotate={true}
-                  autoRotateSpeed={0.9}
+                  autoRotateSpeed={0.8}
                 />
                 <AnatomicalTwin3D
                   theme={currentThemeConfig}

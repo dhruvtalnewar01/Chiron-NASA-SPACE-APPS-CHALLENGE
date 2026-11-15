@@ -106,3 +106,4 @@ All autonomous interventions, emergency overrides, and medical break-glass activ
 $$H_n = \operatorname{SHA-256}\left( H_{n-1} \parallel t_n \parallel \text{ActorID} \parallel \text{PatientID} \parallel \text{ActionCode} \parallel \text{PayloadJSON} \right)$$
 
 This guarantees legal and medical auditability when communication with terrestrial flight surgeons is re-established.
+
