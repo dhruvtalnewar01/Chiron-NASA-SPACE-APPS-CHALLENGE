@@ -1,0 +1,27 @@
+{
+  "noaa_goes_proton_flux": {
+    "url": "https://services.swpc.noaa.gov/json/goes/primary/integral-protons-plot-6-hour.json",
+    "description": "NOAA SWPC GOES Primary Integral Proton Flux - live >=10 MeV and >=100 MeV proton flux (pfu) for radiation burden and storm-shelter timing",
+    "cache_file": "goes_proton_flux_cache.json",
+    "refresh_interval_seconds": 300
+  },
+  "noaa_kp_index": {
+    "url": "https://services.swpc.noaa.gov/json/planetary_k_index_1m.json",
+    "description": "NOAA SWPC Planetary K-Index - live geomagnetic storm severity for LEO and cislunar radiation dose scaling",
+    "cache_file": "kp_index_cache.json",
+    "refresh_interval_seconds": 300
+  },
+  "nasa_osdr_study_meta": {
+    "url": "https://osdr.nasa.gov/osdr/data/osd/meta/570",
+    "description": "NASA OSDR v2 study metadata - SpaceX Inspiration4 / SOMA cohort priors",
+    "cache_file": "osdr_meta_570_cache.json",
+    "refresh_interval_seconds": 3600
+  },
+  "nasa_osdr_search": {
+    "url": "https://osdr.nasa.gov/osdr/data/search?term=human+spaceflight&size=25",
+    "description": "NASA OSDR public human spaceflight study search for provenance citations",
+    "cache_file": "osdr_search_cache.json",
+    "refresh_interval_seconds": 3600
+  }
+}
+

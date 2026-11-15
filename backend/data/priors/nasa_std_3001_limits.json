@@ -1,0 +1,74 @@
+{
+  "source": "NASA-STD-3001 Volume 1 (Crew Health) and Volume 2 (Human Factors, Habitability, Environmental Health)",
+  "provenance": "[REAL | NASA-STD-3001]",
+  "version": "Rev C, 2022",
+  "limits": {
+    "cabin_ppco2_mmhg": {
+      "nominal_max": 2.0,
+      "action_threshold": 3.0,
+      "permissible_exposure_limit": 4.0,
+      "unit": "mmHg",
+      "rule_id": "NASA-STD-3001-V2-6004"
+    },
+    "arterial_spo2_pct": {
+      "nominal_min": 95.0,
+      "hypoxic_alert": 90.0,
+      "critical_min": 85.0,
+      "unit": "percent"
+    },
+    "sleep_duration_hours": {
+      "minimum_operational": 6.0,
+      "circadian_misalignment_limit_hours": 2.5,
+      "unit": "hours_per_24h"
+    },
+    "radiation_dose": {
+      "career_effective_dose_limit_msv": 600.0,
+      "thirty_day_bfo_limit_msv": 250.0,
+      "annual_limit_msv": 500.0,
+      "unit": "mSv"
+    },
+    "cabin_temperature_c": {
+      "nominal_min": 18.3,
+      "nominal_max": 26.7,
+      "unit": "celsius"
+    },
+    "cabin_pressure_kpa": {
+      "nominal_min": 97.9,
+      "nominal_max": 102.7,
+      "unit": "kPa"
+    },
+    "cabin_humidity_pct": {
+      "nominal_min": 25.0,
+      "nominal_max": 75.0,
+      "unit": "percent"
+    },
+    "noise_continuous_exposure_dba": {
+      "limit_24h": 60.0,
+      "limit_8h": 72.0,
+      "unit": "dBA"
+    }
+  },
+  "safety_veto_rules": [
+    {
+      "id": "VETO-CO2-EXERCISE",
+      "condition": "cabin_ppco2_mmhg > 3.5 AND countermeasure == high_intensity_ared_workout",
+      "action": "VETO",
+      "rationale": "High exertion prohibited under hypercapnic load > 3.5 mmHg; scrub CO2 first",
+      "reference": "NASA-STD-3001-V2-6004"
+    },
+    {
+      "id": "VETO-RAD-EVA",
+      "condition": "goes_proton_flux_pfu >= 10.0 AND countermeasure == EVA_OR_UNSHIELDED_CUPOLA",
+      "action": "VETO",
+      "rationale": "Immediate Storm Shelter ingress required during SPE >= 10 pfu",
+      "reference": "NASA-STD-3001-V1-RAD-ALARA"
+    },
+    {
+      "id": "VETO-ORTHO-VASODILATOR",
+      "condition": "cardio_orthostatic_score < 45 AND countermeasure IN [vasodilator, sedative] AND NOT fluid_loading_active",
+      "action": "VETO",
+      "rationale": "Vasodilator/sedative contraindicated in orthostatic compromise without prior fluid loading"
+    }
+  ]
+}
+

@@ -1,0 +1,56 @@
+{
+  "source": "PhysioNet (WESAD, MIMIC-IV summary statistics)",
+  "provenance": "[SIMULATED | EARTH-PROXY]",
+  "disclaimer": "Earth-derived autonomic and stress dynamics used strictly to parameterize short-horizon Ornstein-Uhlenbeck mean-reversion rates. NOT validated for spaceflight physiology.",
+  "references": [
+    "Schmidt et al., ICMI 2018 - WESAD Wearable Stress and Affect Detection",
+    "Johnson et al., Scientific Data 2023 - MIMIC-IV Clinical Database"
+  ],
+  "ornstein_uhlenbeck_params": {
+    "cardio": {
+      "theta": 0.08,
+      "mu_baseline": 72.0,
+      "sigma": 4.5,
+      "description": "Cardiovascular mean-reversion from WESAD HR variability"
+    },
+    "neuro": {
+      "theta": 0.04,
+      "mu_baseline": 78.0,
+      "sigma": 5.0,
+      "description": "Neurocognitive reversion from PVT reaction time distributions"
+    },
+    "bone": {
+      "theta": 0.005,
+      "mu_baseline": 85.0,
+      "sigma": 1.2,
+      "description": "Bone density slow dynamics (monthly timescale)"
+    },
+    "immune": {
+      "theta": 0.06,
+      "mu_baseline": 70.0,
+      "sigma": 6.0,
+      "description": "Immune function reversion from MIMIC-IV WBC dynamics"
+    },
+    "sleep": {
+      "theta": 0.12,
+      "mu_baseline": 80.0,
+      "sigma": 8.0,
+      "description": "Sleep quality reversion from WESAD actigraphy"
+    },
+    "behav": {
+      "theta": 0.10,
+      "mu_baseline": 75.0,
+      "sigma": 7.0,
+      "description": "Behavioral/cognitive performance reversion"
+    },
+    "rad": {
+      "theta": 0.02,
+      "mu_baseline": 90.0,
+      "sigma": 3.0,
+      "description": "Radiation dose accumulation (slow decay only with shielding)"
+    }
+  },
+  "process_noise_Q_diagonal": [4.5, 5.0, 1.2, 6.0, 8.0, 7.0, 3.0],
+  "observation_noise_R_diagonal": [9.0, 16.0, 4.0, 25.0, 36.0, 20.0, 6.0]
+}
+

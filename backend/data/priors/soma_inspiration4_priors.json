@@ -1,0 +1,38 @@
+{
+  "source": "SOMA / SpaceX Inspiration4 and NASA Twins Study publications",
+  "provenance": "[REAL | PUBLISHED-COHORT]",
+  "references": [
+    "Mason et al., Nature 2024 - Space Omics and Medical Atlas (SOMA)",
+    "Garrett-Bakelman et al., Science 2019 - NASA Twins Study",
+    "McGregor et al., NPJ Microgravity 2024 - Inspiration4 Mission Summary"
+  ],
+  "hrv_rmssd": {
+    "preflight_baseline_ms": { "mean": 42.0, "std": 12.5 },
+    "inflight_microgravity_ms": { "mean": 34.0, "std": 15.2 },
+    "shift_factor": -0.19,
+    "description": "HRV RMSSD mean-reversion target decreases ~19% in microgravity"
+  },
+  "optic_nerve_sheath_diameter": {
+    "preflight_mm": { "mean": 5.2, "std": 0.4 },
+    "inflight_distension_rate_mm_per_month": { "mean": 0.12, "std": 0.05 },
+    "sans_threshold_mm": 6.0,
+    "description": "Optic nerve sheath distension rate for SANS risk scoring"
+  },
+  "cytokine_inflammatory_shift": {
+    "il6_fold_change": { "mean": 1.8, "std": 0.6 },
+    "crp_fold_change": { "mean": 1.4, "std": 0.5 },
+    "tnfa_fold_change": { "mean": 1.3, "std": 0.4 },
+    "description": "Inflammatory cytokine shifts observed in short-duration spaceflight"
+  },
+  "bone_density_loss": {
+    "monthly_bmd_pct_loss": { "mean": 1.0, "std": 0.4 },
+    "recovery_rate_pct_per_month_postflight": { "mean": 0.5, "std": 0.2 },
+    "description": "Bone mineral density loss in load-bearing skeletal sites"
+  },
+  "cardiovascular": {
+    "cardiac_output_shift_pct": { "mean": 8.0, "std": 3.0 },
+    "orthostatic_intolerance_incidence_pct": 83.0,
+    "description": "Cardiovascular deconditioning parameters"
+  }
+}
+

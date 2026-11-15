@@ -1,0 +1,72 @@
+# ==============================================================================
+# CHIRON AEROSPACE HEALTH OS - ROOT .GITIGNORE
+# NASA Space Apps Challenge 2026
+# ==============================================================================
+
+# Node / Frontend Artifacts
+node_modules/
+frontend/node_modules/
+dist/
+frontend/dist/
+dist-ssr/
+*.local
+.npm/
+
+# Environment Variables & Sensitive Credentials
+.env
+.env.*
+!.env.example
+backend/.env
+frontend/.env
+frontend/.env.local
+*.pem
+*.key
+*.cert
+
+# Python Cache & Virtual Environments
+__pycache__/
+backend/__pycache__/
+*/__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+.pytest_cache/
+.coverage
+htmlcov/
+*.egg-info/
+.eggs/
+
+# Telemetry Cache & Intermediate Data (Keep schema & priors)
+backend/data/cache/*
+!backend/data/cache/.gitkeep
+!backend/data/cache/*.json
+
+# Operating System & Editor Files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+[Tt]humbs.db
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Ephemeral verification outputs
+test_nobg.png
+screenshot*.png
+snap.png
+edge_screen.png
+screen1.png
+verification_screens/
+*.db
