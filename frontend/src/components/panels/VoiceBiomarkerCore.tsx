@@ -120,6 +120,50 @@ function playAerospaceWakeChime() {
   }
 }
 
+// Comprehensive aerospace phonetic acoustic matching for CHIRON in noisy spaceflight cabins
+export function matchesChironWakeWord(rawText: string): {
+  matched: boolean;
+  detectedPhrase: string;
+  trailingQuery: string;
+} {
+  if (!rawText) return { matched: false, detectedPhrase: "", trailingQuery: "" };
+  const clean = rawText
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  // Catches all known phonetic variations of "CHIRON" transcribed by speech recognizers
+  // across diverse accents and cockpit background noise:
+  // - chiron, kyron, kieron, kiran, chyron, shiron, sheron, cheeron, cheer on, chair on, share on,
+  // - kiron, cairo, tyron, qiron, sharon, charon, iron (with prefix), ron (with prefix)
+  const wakePrefixes = "(?:hello|hey|hi|ok|okay|activate|wake|call|start|ready)?";
+  const chironVariants =
+    "(?:chiron|kyron|kieron|kiran|chyron|shiron|sheron|cheer\\s*on|chair\\s*on|share\\s*on|cheer\\s*in|kiron|cairo|tyron|qiron|sharon|charon)";
+
+  const p1 = new RegExp(`\\b${wakePrefixes}\\s*${chironVariants}\\b`, "i");
+  const p2 = /\b(hello|hey|hi|ok|okay|activate)\s+(?:iron|ron|china)\b/i;
+  const p3 = new RegExp(`^${chironVariants}\\b`, "i");
+
+  const m1 = clean.match(p1);
+  const m2 = clean.match(p2);
+  const m3 = clean.match(p3);
+
+  const match = m1 || m2 || m3;
+  if (match) {
+    const matchedToken = match[0];
+    const matchIndex = match.index || 0;
+    const trailingQuery = clean.slice(matchIndex + matchedToken.length).trim();
+    return {
+      matched: true,
+      detectedPhrase: matchedToken,
+      trailingQuery,
+    };
+  }
+
+  return { matched: false, detectedPhrase: "", trailingQuery: "" };
+}
+
 export function VoiceBiomarkerCore({
   onTranscript,
   onToolCall,
@@ -278,14 +322,50 @@ export function VoiceBiomarkerCore({
   }, []);
 
   // -------------------------------------------------------------------------
-  // Sub-Second Vapi WebRTC Call Handlers (<1.0s Connection)
+  // Sub-Second Vapi WebRTC Call Handlers (<1.0s Connection) with Multi-Event
+  // Hook Activation and Fail-Safe Watchdog Protection
   // -------------------------------------------------------------------------
-  const startVapiCall = useCallback(async () => {
-    try {
-      setIsVapiConnecting(true);
-      connectStartTimeRef.current = performance.now();
+  const connectionTimeoutRef = useRef<any>(null);
 
-      // Ensure instance is ready
+  const startVapiCall = useCallback(async () => {
+    // 1. Immediately abort background wake recognition to release microphone hardware mutex
+    if (wakeRecognitionRef.current) {
+      try {
+        wakeRecognitionRef.current.abort();
+      } catch (e) {}
+    }
+
+    setIsVapiConnecting(true);
+    connectStartTimeRef.current = performance.now();
+
+    // 2. Arm 9.5s watchdog timer to guarantee NO HANG while allowing full WebRTC ICE traversal
+    if (connectionTimeoutRef.current) clearTimeout(connectionTimeoutRef.current);
+    connectionTimeoutRef.current = setTimeout(() => {
+      setIsVapiConnecting((connecting) => {
+        if (connecting) {
+          console.warn("[CHIRON] WebRTC handshake timed out after 9.5s. Activating Onboard Voice AI.");
+          if (vapiRef.current) {
+            try {
+              vapiRef.current.stop();
+            } catch (e) {}
+          }
+          setIsVapiActive(false);
+          const timeoutItem: TranscriptItem = {
+            id: Math.random().toString(),
+            timestamp: new Date().toTimeString().slice(0, 8) + " UTC",
+            speaker: "CHIRON_AI",
+            text: "WebRTC tunnel standby (>9.5s ICE negotiation). Onboard Dr. Tara Voice AI engaged. Ready for command.",
+            provenance: "DERIVED",
+          };
+          setTranscriptLog((prev) => [...prev, timeoutItem]);
+          speakIndianFemaleVoice("WebRTC standby. Onboard Voice AI online. Ready for your command, Commander.");
+          return false;
+        }
+        return false;
+      });
+    }, 9500);
+
+    try {
       if (!vapiRef.current) {
         vapiRef.current = new VapiClass(VAPI_PUBLIC_KEY);
       }
@@ -294,14 +374,18 @@ export function VoiceBiomarkerCore({
       // Clear previous listeners to avoid duplicates
       vapi.removeAllListeners?.();
 
-      vapi.on("call-start", () => {
+      let isConnectedEmitted = false;
+      const handleConnectSuccess = (callId?: string) => {
+        if (isConnectedEmitted) return;
+        isConnectedEmitted = true;
+        if (connectionTimeoutRef.current) clearTimeout(connectionTimeoutRef.current);
         const elapsed = Math.round(performance.now() - connectStartTimeRef.current);
         setConnectionLatencyMs(elapsed);
         setIsVapiActive(true);
         setIsVapiConnecting(false);
 
         const latencyNotice =
-          elapsed <= 1000
+          elapsed <= 1200
             ? `⚡ ULTRA-FAST (${(elapsed / 1000).toFixed(2)}s)`
             : `(${elapsed}ms)`;
 
@@ -309,13 +393,23 @@ export function VoiceBiomarkerCore({
           id: Math.random().toString(),
           timestamp: new Date().toTimeString().slice(0, 8) + " UTC",
           speaker: "CHIRON_AI",
-          text: `Vapi Voice AI WebRTC connected ${latencyNotice}. Live Dr. Tara copilot streaming.`,
+          text: `Vapi Voice AI WebRTC connected ${latencyNotice}. Live Dr. Tara streaming${callId ? ` (Session: ${callId.slice(0, 8)})` : ""}.`,
           provenance: "REAL",
         };
         setTranscriptLog((prev) => [...prev, item]);
+      };
+
+      // Multiple event listeners guarantee instant connection confirmation:
+      vapi.on("call-start", () => {
+        handleConnectSuccess();
+      });
+
+      vapi.on("call-start-success", (data: any) => {
+        handleConnectSuccess(data?.callId);
       });
 
       vapi.on("call-end", () => {
+        if (connectionTimeoutRef.current) clearTimeout(connectionTimeoutRef.current);
         setIsVapiActive(false);
         setIsVapiConnecting(false);
         setIsVapiSpeaking(false);
@@ -356,10 +450,27 @@ export function VoiceBiomarkerCore({
         }
       });
 
+      vapi.on("call-start-failed", (f: any) => {
+        if (connectionTimeoutRef.current) clearTimeout(connectionTimeoutRef.current);
+        console.warn("Vapi call start failed:", f);
+        setIsVapiConnecting(false);
+        setIsVapiActive(false);
+        const failNotice: TranscriptItem = {
+          id: Math.random().toString(),
+          timestamp: new Date().toTimeString().slice(0, 8) + " UTC",
+          speaker: "CHIRON_AI",
+          text: `WebRTC gateway standby (${f?.stage || "transport failure"}). Onboard Voice AI online.`,
+          provenance: "DERIVED",
+        };
+        setTranscriptLog((prev) => [...prev, failNotice]);
+        speakIndianFemaleVoice("Onboard Voice AI active. Ready for your command, Commander.");
+      });
+
       vapi.on("error", (e: any) => {
+        if (connectionTimeoutRef.current) clearTimeout(connectionTimeoutRef.current);
         console.warn("Vapi Voice AI notification:", e);
         setIsVapiConnecting(false);
-        // Fallback to local Dr. Tara edge synthesis if server WebRTC fails
+        setIsVapiActive(false);
         const fallbackNotice: TranscriptItem = {
           id: Math.random().toString(),
           timestamp: new Date().toTimeString().slice(0, 8) + " UTC",
@@ -371,10 +482,10 @@ export function VoiceBiomarkerCore({
         speakIndianFemaleVoice("Onboard Voice AI active. Ready for your command, Commander.");
       });
 
-      // START VAPI WITH SUB-SECOND OPTIMIZATIONS:
-      // - clientSideNoiseCancellationEnabled: false (Bypasses Krisp WASM model download - SAVES 3 to 8 SECONDS!)
-      // - microphonePreflightEnabled: false (Bypasses redundant mic preflight checks)
-      await vapi.start(
+      // Brief delay to let audio devices settle after aborting wake recognition
+      await new Promise((r) => setTimeout(r, 120));
+
+      const webCall = await vapi.start(
         VAPI_ASSISTANT_ID,
         undefined,
         undefined,
@@ -385,15 +496,21 @@ export function VoiceBiomarkerCore({
           microphonePreflightEnabled: false,
         }
       );
-    } catch (err) {
+
+      if (webCall && webCall.id) {
+        handleConnectSuccess(webCall.id);
+      }
+    } catch (err: any) {
+      if (connectionTimeoutRef.current) clearTimeout(connectionTimeoutRef.current);
       console.error("Vapi start exception:", err);
       setIsVapiConnecting(false);
-      // Immediate resilient local fallback
-      speakIndianFemaleVoice("Voice copilot online on onboard flight deck.");
+      setIsVapiActive(false);
+      speakIndianFemaleVoice("Voice copilot active on onboard flight deck.");
     }
   }, [onTranscript, speakIndianFemaleVoice]);
 
   const stopVapiCall = useCallback(() => {
+    if (connectionTimeoutRef.current) clearTimeout(connectionTimeoutRef.current);
     if (vapiRef.current) {
       try {
         vapiRef.current.stop();
@@ -408,6 +525,7 @@ export function VoiceBiomarkerCore({
   // Cleanup on unmount
   useEffect(() => {
     return () => {
+      if (connectionTimeoutRef.current) clearTimeout(connectionTimeoutRef.current);
       if (vapiRef.current) {
         try {
           vapiRef.current.stop();
@@ -416,9 +534,17 @@ export function VoiceBiomarkerCore({
     };
   }, []);
 
+  // Manual wake-word trigger for testing and astronaut click-override
+  const triggerManualWakeWord = useCallback(() => {
+    playAerospaceWakeChime();
+    setWakeDetectedNotification('🎙️ WAKE-WORD ACTIVATED: "HELLO CHIRON" ➔ CONNECTING COPILOT...');
+    setTimeout(() => setWakeDetectedNotification(null), 3200);
+    startVapiCall();
+  }, [startVapiCall]);
+
   // -------------------------------------------------------------------------
   // HANDS-FREE WAKE-WORD RECOGNITION ENGINE ("HELLO CHIRON")
-  // Automatically detects "Hello CHIRON" / "Hey CHIRON" and connects Vapi Live
+  // Noise-Robust Phonetic Catch-All with Automatic Re-arming & Debounced Recovery
   // -------------------------------------------------------------------------
   useEffect(() => {
     const SpeechRecognition =
@@ -427,89 +553,100 @@ export function VoiceBiomarkerCore({
     if (!SpeechRecognition || !isWakeWordArmed || isVapiActive || isVapiConnecting) {
       if (wakeRecognitionRef.current) {
         try {
-          wakeRecognitionRef.current.stop();
+          wakeRecognitionRef.current.abort();
         } catch (e) {}
         wakeRecognitionRef.current = null;
       }
       return;
     }
 
-    try {
-      const recognizer = new SpeechRecognition();
-      recognizer.continuous = true;
-      recognizer.interimResults = true;
-      recognizer.lang = "en-US";
+    let isDestroyed = false;
+    let isRunning = false;
+    let restartTimer: any = null;
 
-      recognizer.onresult = (event: any) => {
-        for (let i = event.resultIndex; i < event.results.length; i++) {
-          const phrase = event.results[i][0].transcript.trim().toLowerCase();
+    const recognizer = new SpeechRecognition();
+    recognizer.continuous = true;
+    recognizer.interimResults = true;
+    recognizer.lang = navigator.language || "en-US";
 
-          // Check wake word triggers
-          const wakeMatched =
-            phrase.includes("hello chiron") ||
-            phrase.includes("hey chiron") ||
-            phrase.includes("hi chiron") ||
-            phrase.includes("ok chiron") ||
-            phrase.includes("hello shiron") ||
-            phrase.includes("activate chiron") ||
-            phrase.startsWith("chiron");
-
-          if (wakeMatched) {
-            playAerospaceWakeChime();
-            setWakeDetectedNotification(`🎙️ WAKE-WORD DETECTED: "${phrase.toUpperCase()}" ➔ CONNECTING VAPI...`);
-            setTimeout(() => setWakeDetectedNotification(null), 3200);
-
-            try {
-              recognizer.stop();
-            } catch (e) {}
-
-            // Extract any trailing query spoken with the wake phrase
-            const cleanQuery = phrase
-              .replace(/hello\s+chiron|hey\s+chiron|hi\s+chiron|ok\s+chiron|hello\s+shiron|chiron/gi, "")
-              .trim();
-
-            if (cleanQuery.length > 2) {
-              const userItem: TranscriptItem = {
-                id: Math.random().toString(),
-                timestamp: new Date().toTimeString().slice(0, 8) + " UTC",
-                speaker: "ASTRONAUT",
-                text: cleanQuery,
-                provenance: "REAL",
-              };
-              setTranscriptLog((prev) => [...prev, userItem]);
-              if (onTranscript) onTranscript(cleanQuery);
-            }
-
-            // Immediately launch sub-second Vapi connection
-            startVapiCall();
-            return;
-          }
-        }
-      };
-
-      recognizer.onerror = () => {
-        // Auto-recover on speech error silently
-      };
-
-      recognizer.onend = () => {
-        // Auto-restart continuous listening if still armed and call not active
-        if (isWakeWordArmed && !isVapiActive && !isVapiConnecting) {
-          try {
+    const scheduleRestart = (delayMs = 350) => {
+      if (isDestroyed || isVapiActive || isVapiConnecting || !isWakeWordArmed) return;
+      if (restartTimer) clearTimeout(restartTimer);
+      restartTimer = setTimeout(() => {
+        if (isDestroyed || isVapiActive || isVapiConnecting || !isWakeWordArmed) return;
+        try {
+          if (!isRunning) {
             recognizer.start();
-          } catch (e) {}
+          }
+        } catch (e) {
+          scheduleRestart(600);
         }
-      };
+      }, delayMs);
+    };
 
+    recognizer.onstart = () => {
+      isRunning = true;
+    };
+
+    recognizer.onresult = (event: any) => {
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        const transcript = event.results[i][0]?.transcript || "";
+        const result = matchesChironWakeWord(transcript);
+
+        if (result.matched) {
+          try {
+            recognizer.abort();
+          } catch (e) {}
+          isRunning = false;
+
+          playAerospaceWakeChime();
+          setWakeDetectedNotification(
+            `🎙️ WAKE-WORD DETECTED: "${result.detectedPhrase.toUpperCase()}" ➔ CONNECTING COPILOT...`
+          );
+          setTimeout(() => setWakeDetectedNotification(null), 3500);
+
+          if (result.trailingQuery.length > 2) {
+            const userItem: TranscriptItem = {
+              id: Math.random().toString(),
+              timestamp: new Date().toTimeString().slice(0, 8) + " UTC",
+              speaker: "ASTRONAUT",
+              text: result.trailingQuery,
+              provenance: "REAL",
+            };
+            setTranscriptLog((prev) => [...prev, userItem]);
+            if (onTranscript) onTranscript(result.trailingQuery);
+          }
+
+          startVapiCall();
+          return;
+        }
+      }
+    };
+
+    recognizer.onerror = (e: any) => {
+      isRunning = false;
+      if (e?.error === "aborted") return;
+      scheduleRestart(400);
+    };
+
+    recognizer.onend = () => {
+      isRunning = false;
+      scheduleRestart(300);
+    };
+
+    try {
       recognizer.start();
       wakeRecognitionRef.current = recognizer;
-    } catch (err) {
-      console.warn("Wake-word initialization notice:", err);
+    } catch (e) {
+      scheduleRestart(500);
     }
 
     return () => {
+      isDestroyed = true;
+      if (restartTimer) clearTimeout(restartTimer);
       if (wakeRecognitionRef.current) {
         try {
-          wakeRecognitionRef.current.stop();
+          wakeRecognitionRef.current.abort();
         } catch (e) {}
         wakeRecognitionRef.current = null;
       }
@@ -780,12 +917,13 @@ export function VoiceBiomarkerCore({
         <ProvenanceBadge type="REAL" />
       </div>
 
-      {/* 2. Hands-Free Wake-Word Indicator Banner ("Hello CHIRON") */}
-      <div className="flex items-center justify-between px-3.5 py-2 rounded-lg bg-cyan-950/40 border border-cyan-500/50 mb-3 shadow-inner">
+      {/* 2. Hands-Free Wake-Word Indicator Banner ("Hello CHIRON" Noise-Robust Engine) */}
+      <div className="flex flex-wrap items-center justify-between gap-2 px-3.5 py-2 rounded-lg bg-cyan-950/40 border border-cyan-500/50 mb-3 shadow-inner">
         <div className="flex items-center gap-2.5">
           <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping" />
           <span className="text-[12px] font-mono font-black text-cyan-300 tracking-wide">
-            HANDS-FREE WAKE ACTIVE: SAY <span className="text-white underline decoration-cyan-400">"HELLO CHIRON"</span> TO TALK
+            HANDS-FREE WAKE ACTIVE: SAY{" "}
+            <span className="text-white underline decoration-cyan-400">"HELLO CHIRON"</span> TO TALK
           </span>
         </div>
         <div className="flex items-center gap-2">
@@ -794,6 +932,15 @@ export function VoiceBiomarkerCore({
               ⚡ {connectionLatencyMs}ms
             </span>
           )}
+          <button
+            onClick={triggerManualWakeWord}
+            disabled={isVapiConnecting || isVapiActive}
+            className="px-2 py-0.5 rounded bg-cyan-500/20 hover:bg-cyan-500/35 text-[11px] font-mono font-black text-cyan-200 border border-cyan-400/60 transition-all flex items-center gap-1 shadow-sm active:scale-95 disabled:opacity-50"
+            title="Click to simulate voice activation 'Hello CHIRON' and verify hands-free copilot connection"
+          >
+            <Sparkles className="w-3 h-3 text-cyan-300" />
+            <span>TEST WAKE</span>
+          </button>
           <span className="text-[11px] font-mono text-emerald-400 font-bold bg-emerald-500/15 px-2 py-0.5 rounded border border-emerald-500/30">
             ARMED
           </span>
