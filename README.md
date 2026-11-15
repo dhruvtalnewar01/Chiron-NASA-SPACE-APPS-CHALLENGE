@@ -129,9 +129,6 @@ For complete mathematical formulations and data flow specifications, see [ARCHIT
 ├── .github/
 │   └── workflows/
 │       └── ci.yml               # GitHub Actions CI (Backend test suite + Frontend build)
-├── api/
-│   ├── index.py                 # Vercel serverless Python ASGI bridge for FastAPI
-│   └── requirements.txt         # Serverless Python dependency manifest
 ├── assets/
 │   ├── logo.jpg                 # Official CHIRON Mission Emblem
 │   └── screenshots/             # High-resolution clinical verification screenshots
@@ -165,9 +162,7 @@ For complete mathematical formulations and data flow specifications, see [ARCHIT
 ├── ARCHITECTURE.md              # Mathematical derivations and clinical foundations
 ├── CONTRIBUTING.md              # Code standards, testing, and contribution guide
 ├── docker-compose.yml           # Unified multi-container deployment
-├── package.json                 # Monorepo build and development scripts
-├── requirements.txt             # Unified Python dependencies
-├── vercel.json                  # Vercel unified full-stack serverless deployment configuration
+├── vercel.json                  # Vercel Services multi-service configuration (Frontend + FastAPI Backend)
 ├── LICENSE                      # MIT Open Source License
 └── README.md                    # Primary repository presentation
 ```
@@ -238,19 +233,18 @@ Visit `http://localhost:5173` to access the live workstation.
 
 ---
 
-### Option C: Zero-Config Vercel Deployment
+### Option C: Vercel Multi-Services Deployment (1-Click)
 
-Deploy the entire full-stack system (React + Vite SPA frontend and FastAPI Python serverless backend) directly to Vercel:
+Deploy the entire full-stack system as a unified multi-service project on Vercel:
 
 1. Import the repository in your [Vercel Dashboard](https://vercel.com/new).
-2. All settings are automatically discovered from `vercel.json`:
-   - **Framework Preset:** `Other` (or `Vite`)
-   - **Root Directory:** `./`
-   - **Build Command:** `cd frontend && npm install && npm run build`
-   - **Output Directory:** `frontend/dist`
-   - **Serverless API Bridge:** `api/index.py` (FastAPI with automatic Python dependency packaging)
-3. *(Optional)* Add any custom environment variables (e.g. `OPENAI_API_KEY`, `VAPI_API_KEY`).
-4. Click **Deploy**. Your dashboard and API endpoints will be live under a unified HTTPS domain with zero CORS setup needed.
+2. Vercel automatically detects [`vercel.json`](vercel.json) using the **Services** preset:
+   - **Service `frontend`:** Root `frontend`, framework `vite`, public route `/(.*)`
+   - **Service `backend`:** Root `backend`, framework `fastapi`, entrypoint `main.py`, public route `/api/(.*)`
+3. *(Optional)* Under **Environment Variables**, add:
+   - `OPENAI_API_KEY`: OpenAI API key (for live predictive AI telemetry radar)
+   - `VAPI_API_KEY`: Vapi AI key (for conversational clinical assistant)
+4. Click **Deploy**. Both the Vite frontend and the FastAPI backend will deploy under a unified domain with zero CORS setup.
 
 ---
 
