@@ -1,0 +1,430 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html, body, #root {
+  height: 100%;
+}
+
+.hero-title {
+  letter-spacing: -0.04em;
+  line-height: 0.95;
+}
+
+/* ------------------------------------------------------------------
+   CHIRON - AEROSPACE MISSION FLIGHT DECK
+   NASA Space Apps Challenge 2026
+   Default Theme: Orbital Ceramic Daylight (Light Theme)
+   ------------------------------------------------------------------ */
+
+:root,
+[data-theme="orbital-daylight"] {
+  /* Theme 01 (Default): Orbital Ceramic Daylight */
+  --surface-canvas: #F8FAFC;
+  --surface: #F8FAFC;
+  --surface-base: #F1F5F9;
+  --surface-primary: #FFFFFF;
+  --surface-panel: rgba(255, 255, 255, 0.94);
+  --surface-elevated: #FFFFFF;
+  --surface-active: #E0F2FE;
+  --surface-card: #FFFFFF;
+  --panel: rgba(255, 255, 255, 0.96);
+  --canvas-bg: #F1F5F9;
+
+  /* Liquid Glass Light Tokens */
+  --liquid-glass-bg: linear-gradient(145deg, rgba(255, 255, 255, 0.98) 0%, rgba(241, 245, 249, 0.96) 100%);
+  --liquid-glass-card-bg: linear-gradient(145deg, #FFFFFF 0%, #F8FAFC 100%);
+  --liquid-glass-pill-bg: #E2E8F0;
+  --liquid-glass-active-bg: rgba(2, 132, 199, 0.12);
+  --liquid-glass-border: #CBD5E1;
+  --liquid-glass-border-hover: #0284C7;
+  --liquid-glass-rim: rgba(255, 255, 255, 1);
+  --accent-glow-subtle: rgba(2, 132, 199, 0.25);
+
+  /* High-Contrast Structural Borders */
+  --border-primary: #CBD5E1;
+  --border-secondary: #E2E8F0;
+  --border-tertiary: #F1F5F9;
+  --border-subtle: #E2E8F0;
+  --border-strong: #94A3B8;
+  --panel-border: #CBD5E1;
+
+  /* Bold Dark Clinical Typography */
+  --ink-primary: #0F172A;
+  --ink-secondary: #334155;
+  --ink-tertiary: #64748B;
+  --text-primary: #0F172A;
+  --text-secondary: #334155;
+  --text-tertiary: #64748B;
+
+  /* High-Visibility Clinical Telemetry Accents */
+  --accent-ok: #059669;
+  --accent-warn: #D97706;
+  --accent-crit: #E11D48;
+  --accent-info: #0284C7;
+  --accent-teal: #059669;
+  --accent-active: #0284C7;
+  --semantic-nominal: #059669;
+  --semantic-advisory: #D97706;
+  --semantic-critical: #E11D48;
+
+  /* RGB Components */
+  --accent-ok-rgb: 5, 150, 105;
+  --accent-warn-rgb: 217, 119, 6;
+  --accent-crit-rgb: 225, 29, 72;
+  --accent-info-rgb: 2, 132, 199;
+
+  /* Glows & Shadows */
+  --glow-ok: rgba(5, 150, 105, 0.35);
+  --glow-warn: rgba(217, 119, 6, 0.35);
+  --glow-crit: rgba(225, 29, 72, 0.4);
+  --glow-abstain: rgba(100, 116, 139, 0.3);
+  --wireframe: rgba(15, 23, 42, 0.1);
+  --grid-line: rgba(2, 132, 199, 0.08);
+
+  --glass-shadow: 0 10px 30px -5px rgba(15, 23, 42, 0.08), 0 0 0 1px #CBD5E1;
+  --glass-highlight: inset 0 1px 0 rgba(255, 255, 255, 1);
+}
+
+[data-theme="deep-space"] {
+  /* Theme 02: Deep-Space Obsidian Glass */
+  --surface-canvas: #040711;
+  --surface: #040711;
+  --surface-base: #040711;
+  --surface-primary: #040711;
+  --surface-panel: rgba(15, 23, 42, 0.78);
+  --surface-elevated: rgba(22, 33, 56, 0.85);
+  --surface-active: rgba(14, 165, 233, 0.22);
+  --surface-card: rgba(15, 23, 42, 0.78);
+  --panel: rgba(15, 23, 42, 0.82);
+  --canvas-bg: #040711;
+
+  /* Obsidian Glass Physical Tokens */
+  --liquid-glass-bg: linear-gradient(145deg, rgba(15, 23, 42, 0.82) 0%, rgba(9, 14, 26, 0.92) 100%);
+  --liquid-glass-card-bg: linear-gradient(145deg, rgba(15, 23, 42, 0.78) 0%, rgba(9, 14, 26, 0.88) 100%);
+  --liquid-glass-pill-bg: rgba(30, 41, 59, 0.85);
+  --liquid-glass-active-bg: rgba(14, 165, 233, 0.24);
+  --liquid-glass-border: rgba(56, 189, 248, 0.22);
+  --liquid-glass-border-hover: rgba(56, 189, 248, 0.55);
+  --liquid-glass-rim: rgba(255, 255, 255, 0.16);
+  --accent-glow-subtle: rgba(14, 165, 233, 0.35);
+
+  /* Semantic Borders */
+  --border-primary: rgba(56, 189, 248, 0.22);
+  --border-secondary: rgba(51, 65, 85, 0.5);
+  --border-tertiary: rgba(30, 41, 59, 0.6);
+  --border-subtle: rgba(51, 65, 85, 0.35);
+  --border-strong: rgba(56, 189, 248, 0.45);
+  --panel-border: rgba(56, 189, 248, 0.25);
+
+  /* High-Contrast Titanium Typography */
+  --ink-primary: #F8FAFC;
+  --ink-secondary: #CBD5E1;
+  --ink-tertiary: #94A3B8;
+  --text-primary: #F8FAFC;
+  --text-secondary: #CBD5E1;
+  --text-tertiary: #94A3B8;
+
+  /* Telemetry Accents */
+  --accent-ok: #10B981;
+  --accent-warn: #F59E0B;
+  --accent-crit: #F43F5E;
+  --accent-info: #0EA5E9;
+  --accent-teal: #10B981;
+  --accent-active: #0EA5E9;
+  --semantic-nominal: #10B981;
+  --semantic-advisory: #F59E0B;
+  --semantic-critical: #F43F5E;
+
+  /* RGB Components */
+  --accent-ok-rgb: 16, 185, 129;
+  --accent-warn-rgb: 245, 158, 11;
+  --accent-crit-rgb: 244, 63, 94;
+  --accent-info-rgb: 14, 165, 233;
+
+  /* Glows */
+  --glow-ok: rgba(16, 185, 129, 0.45);
+  --glow-warn: rgba(245, 158, 11, 0.45);
+  --glow-crit: rgba(244, 63, 94, 0.55);
+  --glow-abstain: rgba(51, 65, 85, 0.5);
+  --wireframe: rgba(241, 245, 249, 0.12);
+  --grid-line: rgba(56, 189, 248, 0.06);
+
+  /* Shadows */
+  --glass-shadow: 0 20px 45px -15px rgba(0, 0, 0, 0.75), 0 0 0 1px rgba(56, 189, 248, 0.2);
+  --glass-highlight: inset 0 1px 0 0 rgba(255, 255, 255, 0.16);
+}
+
+[data-theme="circadian-red"] {
+  /* Theme 03: Circadian Red-Shift Triage */
+  --surface-canvas: #120305;
+  --surface: #120305;
+  --surface-base: #120305;
+  --surface-primary: #120305;
+  --surface-panel: rgba(26, 7, 10, 0.88);
+  --surface-elevated: rgba(38, 12, 16, 0.92);
+  --surface-active: rgba(244, 63, 94, 0.28);
+  --surface-card: rgba(26, 7, 10, 0.88);
+  --panel: rgba(26, 7, 10, 0.92);
+  --canvas-bg: #120305;
+
+  /* Liquid Glass Red Tokens */
+  --liquid-glass-bg: linear-gradient(145deg, rgba(26, 7, 10, 0.92) 0%, rgba(18, 3, 5, 0.96) 100%);
+  --liquid-glass-card-bg: linear-gradient(145deg, rgba(26, 7, 10, 0.88) 0%, rgba(18, 3, 5, 0.94) 100%);
+  --liquid-glass-pill-bg: rgba(45, 10, 15, 0.9);
+  --liquid-glass-active-bg: rgba(244, 63, 94, 0.3);
+  --liquid-glass-border: rgba(244, 63, 94, 0.35);
+  --liquid-glass-border-hover: rgba(244, 63, 94, 0.7);
+  --liquid-glass-rim: rgba(255, 200, 200, 0.2);
+  --accent-glow-subtle: rgba(244, 63, 94, 0.4);
+
+  /* Semantic Borders */
+  --border-primary: rgba(244, 63, 94, 0.35);
+  --border-secondary: rgba(76, 20, 28, 0.6);
+  --border-tertiary: rgba(45, 10, 15, 0.7);
+  --border-subtle: rgba(76, 20, 28, 0.4);
+  --border-strong: rgba(244, 63, 94, 0.55);
+  --panel-border: rgba(244, 63, 94, 0.35);
+
+  /* High-Contrast Circadian Typography */
+  --ink-primary: #FFE4E6;
+  --ink-secondary: #FDA4AF;
+  --ink-tertiary: #F43F5E;
+  --text-primary: #FFE4E6;
+  --text-secondary: #FDA4AF;
+  --text-tertiary: #F43F5E;
+
+  /* Telemetry Accents */
+  --accent-ok: #10B981;
+  --accent-warn: #F59E0B;
+  --accent-crit: #F43F5E;
+  --accent-info: #FB7185;
+  --accent-teal: #10B981;
+  --accent-active: #F43F5E;
+  --semantic-nominal: #10B981;
+  --semantic-advisory: #F59E0B;
+  --semantic-critical: #F43F5E;
+
+  /* RGB Components */
+  --accent-ok-rgb: 16, 185, 129;
+  --accent-warn-rgb: 245, 158, 11;
+  --accent-crit-rgb: 244, 63, 94;
+  --accent-info-rgb: 251, 113, 133;
+
+  /* Shadows */
+  --glass-shadow: 0 20px 45px -15px rgba(0, 0, 0, 0.85), 0 0 0 1px rgba(244, 63, 94, 0.35);
+  --glass-highlight: inset 0 1px 0 0 rgba(255, 200, 200, 0.2);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  min-height: 100vh;
+  width: 100%;
+  overflow-x: hidden;
+  background-color: var(--surface-canvas);
+  color: var(--ink-primary);
+  font-family: "Inter", system-ui, -apple-system, sans-serif;
+  font-size: 15px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Monospace readouts with large tabular numerals */
+.mono-readout {
+  font-family: "JetBrains Mono", "IBM Plex Mono", monospace;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+  font-weight: 800;
+}
+
+/* ==================================================================
+   GLASSMORPHIC BENTO COMMAND CARDS
+   ================================================================== */
+
+.chiron-bento-card {
+  background: var(--liquid-glass-card-bg);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1.5px solid var(--liquid-glass-border);
+  box-shadow: 
+    var(--glass-highlight),
+    var(--glass-shadow);
+  border-radius: 8px;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease, box-shadow 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.chiron-bento-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--liquid-glass-border-hover);
+  box-shadow: 
+    var(--glass-highlight),
+    0 24px 48px -12px rgba(0, 0, 0, 0.18),
+    0 0 20px -4px var(--accent-glow-subtle);
+}
+
+.liquid-glass-pill {
+  background: var(--liquid-glass-pill-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--liquid-glass-border);
+  box-shadow: 
+    var(--glass-highlight),
+    0 4px 16px -2px rgba(0, 0, 0, 0.08);
+  border-radius: 6px;
+  transition: all 0.18s ease;
+}
+
+/* Refractive Underglow Classes for High-Contrast Tactility */
+.glow-refract-cyan {
+  box-shadow: 
+    var(--glass-highlight),
+    0 10px 28px -6px rgba(2, 132, 199, 0.35),
+    0 0 0 1.5px var(--accent-info);
+}
+
+.glow-refract-teal {
+  box-shadow: 
+    var(--glass-highlight),
+    0 10px 28px -6px rgba(5, 150, 105, 0.35),
+    0 0 0 1.5px var(--accent-ok);
+}
+
+.glow-refract-amber {
+  box-shadow: 
+    var(--glass-highlight),
+    0 10px 28px -6px rgba(217, 119, 6, 0.35),
+    0 0 0 1.5px var(--accent-warn);
+}
+
+.glow-refract-crimson {
+  box-shadow: 
+    var(--glass-highlight),
+    0 10px 28px -6px rgba(225, 29, 72, 0.45),
+    0 0 0 1.5px var(--accent-crit);
+}
+
+/* Provenance badges (Large, Bold & Crisp: 4px corners, ZERO pill) */
+.badge-real {
+  background: rgba(var(--accent-ok-rgb), 0.16);
+  color: var(--accent-ok);
+  border: 1.5px solid var(--accent-ok);
+  font-size: 13px;
+  font-family: "JetBrains Mono", monospace;
+  padding: 3px 10px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 800;
+}
+
+.badge-simulated {
+  background: rgba(var(--accent-info-rgb), 0.16);
+  color: var(--accent-info);
+  border: 1.5px solid var(--accent-info);
+  font-size: 13px;
+  font-family: "JetBrains Mono", monospace;
+  padding: 3px 10px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 800;
+}
+
+.badge-derived {
+  background: rgba(var(--accent-warn-rgb), 0.16);
+  color: var(--accent-warn);
+  border: 1.5px solid var(--accent-warn);
+  font-size: 13px;
+  font-family: "JetBrains Mono", monospace;
+  padding: 3px 10px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 800;
+}
+
+.badge-abstain {
+  background: rgba(225, 29, 72, 0.16);
+  color: var(--accent-crit);
+  border: 1.5px solid var(--accent-crit);
+  font-size: 13px;
+  font-family: "JetBrains Mono", monospace;
+  padding: 3px 10px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 800;
+}
+
+/* Tactical scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(15, 23, 42, 0.06);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--ink-secondary);
+}
+
+/* 60fps High-Precision Animations */
+@keyframes radar-pulse {
+  0% { transform: scale(0.96); opacity: 0.7; }
+  50% { transform: scale(1.08); opacity: 1; }
+  100% { transform: scale(0.96); opacity: 0.7; }
+}
+
+.animate-radar {
+  animation: radar-pulse 2.4s infinite ease-in-out;
+}
+
+@keyframes laser-scan {
+  0% { top: 4%; opacity: 0.95; }
+  50% { top: 92%; opacity: 1; }
+  100% { top: 4%; opacity: 0.95; }
+}
+
+.animate-laser {
+  animation: laser-scan 3.8s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}
+
+@keyframes flow-dash {
+  to {
+    stroke-dashoffset: -40;
+  }
+}
+
+.animate-flow {
+  stroke-dasharray: 6 4;
+  animation: flow-dash 1.4s linear infinite;
+}
+
+@keyframes eva-float {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-12px) rotate(1.2deg);
+  }
+}
+
+.animate-eva-float {
+  animation: eva-float 7s ease-in-out infinite;
+}

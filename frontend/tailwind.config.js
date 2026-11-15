@@ -1,0 +1,46 @@
+/** @type {import('tailwindcss').Config} */
+export default {
+  content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
+  theme: {
+    extend: {
+      fontFamily: {
+        readex: ['"Readex Pro"', "system-ui", "-apple-system", "sans-serif"],
+        mono: ['"JetBrains Mono"', '"IBM Plex Mono"', "monospace"],
+        "ibm-mono": ['"IBM Plex Mono"', '"JetBrains Mono"', "monospace"],
+        sans: ['"Inter"', "system-ui", "sans-serif"],
+        display: ['"Space Grotesk"', '"Inter"', "sans-serif"],
+      },
+      colors: {
+        "od-surface": "#F4F6F8",
+        "od-panel": "rgba(255,255,255,0.88)",
+        "od-ink-primary": "#0F172A",
+        "od-ink-secondary": "#475569",
+        "od-ink-tertiary": "#94A3B8",
+        "od-teal": "#0D9488",
+        "od-amber": "#D97706",
+        "od-crimson": "#E11D48",
+        "od-cobalt": "#0284C7",
+        "ds-surface": "#070A0E",
+        "ds-panel": "rgba(13,18,26,0.86)",
+        "ds-ink-primary": "#F1F5F9",
+        "ds-ink-secondary": "#94A3B8",
+        "ds-ink-tertiary": "#334155",
+        "ds-emerald": "#10B981",
+        "ds-ochre": "#F59E0B",
+        "ds-vermilion": "#F43F5E",
+        "ds-cyan": "#06B6D4",
+        "cr-surface": "#0C0607",
+        "cr-panel": "rgba(24,10,12,0.92)",
+        "cr-ink-primary": "#FECDD3",
+        "cr-ink-secondary": "#FDA4AF",
+        "cr-amber": "#FB923C",
+        "cr-red": "#EF4444",
+        "cr-gold": "#EAB308",
+      },
+      borderRadius: {
+        chiron: "3px",
+      },
+    },
+  },
+  plugins: [],
+};
