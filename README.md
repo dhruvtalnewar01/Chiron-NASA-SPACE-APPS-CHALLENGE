@@ -129,6 +129,9 @@ For complete mathematical formulations and data flow specifications, see [ARCHIT
 ├── .github/
 │   └── workflows/
 │       └── ci.yml               # GitHub Actions CI (Backend test suite + Frontend build)
+├── api/
+│   ├── index.py                 # Vercel serverless Python ASGI bridge for FastAPI
+│   └── requirements.txt         # Serverless Python dependency manifest
 ├── assets/
 │   ├── logo.jpg                 # Official CHIRON Mission Emblem
 │   └── screenshots/             # High-resolution clinical verification screenshots
@@ -162,6 +165,9 @@ For complete mathematical formulations and data flow specifications, see [ARCHIT
 ├── ARCHITECTURE.md              # Mathematical derivations and clinical foundations
 ├── CONTRIBUTING.md              # Code standards, testing, and contribution guide
 ├── docker-compose.yml           # Unified multi-container deployment
+├── package.json                 # Monorepo build and development scripts
+├── requirements.txt             # Unified Python dependencies
+├── vercel.json                  # Vercel unified full-stack serverless deployment configuration
 ├── LICENSE                      # MIT Open Source License
 └── README.md                    # Primary repository presentation
 ```
@@ -229,6 +235,22 @@ npm run dev
 npm run build && npm run preview
 ```
 Visit `http://localhost:5173` to access the live workstation.
+
+---
+
+### Option C: Zero-Config Vercel Deployment
+
+Deploy the entire full-stack system (React + Vite SPA frontend and FastAPI Python serverless backend) directly to Vercel:
+
+1. Import the repository in your [Vercel Dashboard](https://vercel.com/new).
+2. All settings are automatically discovered from `vercel.json`:
+   - **Framework Preset:** `Other` (or `Vite`)
+   - **Root Directory:** `./`
+   - **Build Command:** `cd frontend && npm install && npm run build`
+   - **Output Directory:** `frontend/dist`
+   - **Serverless API Bridge:** `api/index.py` (FastAPI with automatic Python dependency packaging)
+3. *(Optional)* Add any custom environment variables (e.g. `OPENAI_API_KEY`, `VAPI_API_KEY`).
+4. Click **Deploy**. Your dashboard and API endpoints will be live under a unified HTTPS domain with zero CORS setup needed.
 
 ---
 

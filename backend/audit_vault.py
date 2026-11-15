@@ -11,10 +11,17 @@ import json
 import sqlite3
 from datetime import datetime, timezone
 from pathlib import Path
+import os
 from typing import Any, Optional
 
-DB_PATH = Path(__file__).resolve().parent / "data" / "audit_vault.db"
-DB_PATH.parent.mkdir(parents=True, exist_ok=True)
+if os.getenv("VERCEL"):
+    DB_PATH = Path("/tmp/audit_vault.db")
+else:
+    DB_PATH = Path(__file__).resolve().parent / "data" / "audit_vault.db"
+    try:
+        DB_PATH.parent.mkdir(parents=True, exist_ok=True)
+    except OSError:
+        DB_PATH = Path("/tmp/audit_vault.db")
 
 GENESIS_HASH = "0000000000000000000000000000000000000000000000000000000000000000"
 

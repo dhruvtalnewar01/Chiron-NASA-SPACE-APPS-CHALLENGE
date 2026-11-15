@@ -86,8 +86,16 @@ except json.JSONDecodeError:
 HOST = os.getenv("HOST", "0.0.0.0")
 PORT = int(os.getenv("PORT", "8000"))
 
-CACHE_DIR = BACKEND_DIR / "data" / "cache"
-CACHE_DIR.mkdir(parents=True, exist_ok=True)
+if os.getenv("VERCEL"):
+    CACHE_DIR = Path("/tmp/chiron_cache")
+else:
+    CACHE_DIR = BACKEND_DIR / "data" / "cache"
+
+try:
+    CACHE_DIR.mkdir(parents=True, exist_ok=True)
+except OSError:
+    CACHE_DIR = Path("/tmp/chiron_cache")
+    CACHE_DIR.mkdir(parents=True, exist_ok=True)
 
 PRIORS_DIR = BACKEND_DIR / "data" / "priors"
 CONFIG_DIR = BACKEND_DIR / "config"
@@ -215,17 +223,20 @@ async def fetch_and_cache(
         raw = resp.content
         content_hash = hashlib.sha256(raw).hexdigest()
 
-        # Write cache
-        cache_path.write_bytes(raw)
-        meta = {
-            "url": url,
-            "sha256": content_hash,
-            "fetched_utc": datetime.now(timezone.utc).isoformat(),
-            "status_code": resp.status_code,
-            "description": description,
-            "size_bytes": len(raw),
-        }
-        meta_path.write_text(json.dumps(meta, indent=2), encoding="utf-8")
+        # Write cache safely (handles read-only Lambda file systems)
+        try:
+            cache_path.write_bytes(raw)
+            meta = {
+                "url": url,
+                "sha256": content_hash,
+                "fetched_utc": datetime.now(timezone.utc).isoformat(),
+                "status_code": resp.status_code,
+                "description": description,
+                "size_bytes": len(raw),
+            }
+            meta_path.write_text(json.dumps(meta, indent=2), encoding="utf-8")
+        except OSError:
+            pass
 
         data = json.loads(raw)
         logger.info("Fetched %s | sha256=%s | %d bytes", description, content_hash[:12], len(raw))
@@ -233,11 +244,12 @@ async def fetch_and_cache(
 
     except Exception as exc:
         logger.warning("Fetch failed for %s: %s - using cache", description, exc)
-        if cache_path.exists():
-            try:
-                return json.loads(cache_path.read_text(encoding="utf-8"))
-            except Exception:
-                return None
+        for check_path in [cache_path, BACKEND_DIR / "data" / "cache" / cache_file]:
+            if check_path.exists():
+                try:
+                    return json.loads(check_path.read_text(encoding="utf-8"))
+                except Exception:
+                    pass
         return None
 
 
@@ -579,10 +591,11 @@ async def lifespan(app: FastAPI):
     except Exception as exc:
         logger.warning("Initial telemetry fetch failed (non-fatal): %s", exc)
 
-    # Start background tasks
-    task_fetcher = asyncio.create_task(periodic_telemetry_fetcher())
-    task_broadcaster = asyncio.create_task(telemetry_broadcaster())
-    _background_tasks.extend([task_fetcher, task_broadcaster])
+    # Start background tasks (only when running as long-running server, not in serverless)
+    if not os.getenv("VERCEL"):
+        task_fetcher = asyncio.create_task(periodic_telemetry_fetcher())
+        task_broadcaster = asyncio.create_task(telemetry_broadcaster())
+        _background_tasks.extend([task_fetcher, task_broadcaster])
 
     logger.info(
         "CHIRON v2.0 ready | crew=%d twins | airgap=%s | port=%d",
@@ -1684,6 +1697,7 @@ async def ws_voice(websocket: WebSocket):
 # ===================================================================
 
 @app.get("/health")
+@app.get("/api/health")
 async def health_check():
     """Health check endpoint."""
     return {
@@ -1700,6 +1714,7 @@ async def health_check():
 
 
 @app.get("/")
+@app.get("/api")
 async def root():
     """Root endpoint with API info."""
     return {

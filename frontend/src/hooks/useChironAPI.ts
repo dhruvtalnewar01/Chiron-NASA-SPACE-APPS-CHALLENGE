@@ -77,7 +77,10 @@ export interface ChironAPIActions {
 // Configuration
 // ---------------------------------------------------------------------------
 
-const WS_URL = "ws://localhost:8000/ws/telemetry";
+const WS_URL =
+  typeof window !== "undefined"
+    ? `${window.location.protocol === "https:" ? "wss:" : "ws:"}//${window.location.host}/ws/telemetry`
+    : "ws://localhost:8000/ws/telemetry";
 const API_BASE = "/api/v1";
 const RECONNECT_DELAY_MS = 3000;
 const MAX_RECONNECT_ATTEMPTS = 20;

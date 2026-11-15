@@ -673,7 +673,7 @@ export function VoiceBiomarkerCore({
       const lower = spokenPrompt.toLowerCase();
 
       try {
-        const res = await fetch("http://127.0.0.1:8000/api/voice/chat", {
+        const res = await fetch("/api/voice/chat", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ text: spokenPrompt, crew_id: "CDR_VANCE", airgap: true }),
